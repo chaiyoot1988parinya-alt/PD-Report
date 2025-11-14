@@ -8,17 +8,10 @@
     body { font-family: sans-serif; padding: 10px; max-width: 400px; margin: auto; }
     input, button { margin: 5px 0; padding: 8px; width: 100%; font-size: 16px; }
     #reader { width: 100%; margin: 10px 0; }
-    .notice { background:#fff3cd; padding:10px; border:1px solid #ffeeba; margin-bottom:10px; }
   </style>
 </head>
 <body>
   <h2>ระบบรายงานการผลิต</h2>
-
-  <div class="notice">
-    ⚠️ หากใช้ iPhone กรุณาเปิดหน้านี้ผ่าน Safari โดยตรง<br>
-    หากใช้ Android ให้เปิดผ่าน Chrome<br>
-    หากกล้องไม่เปิด ให้ตรวจสอบสิทธิ์การเข้าถึงกล้องใน Settings
-  </div>
 
   <button onclick="scanQR('job')">📦 สแกนเลขที่จ๊อบ</button>
   <input id="jobNo" placeholder="เลขที่จ๊อบ" readonly>
@@ -38,46 +31,36 @@
     let mode = "start";
 
     function scanQR(type) {
-  document.getElementById("reader").innerHTML = "";
-  const scanner = new Html5Qrcode("reader");
-
-  scanner.start(
-    { facingMode: "environment" },
-    { fps: 10, qrbox: 250 },
-    msg => {
-      scanner.stop();
       document.getElementById("reader").innerHTML = "";
+      const scanner = new Html5Qrcode("reader");
+      scanner.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 },
+        msg => {
+          scanner.stop();
+          document.getElementById("reader").innerHTML = "";
 
-      if (type === "job") {
-        const jobNo = msg.split("||")[0]; // ✅ แยกเฉพาะเลขที่จ๊อบ
-        document.getElementById("jobNo").value = jobNo;
+          if (type === "job") {
+            document.getElementById("jobNo").value = msg;
+           fetch(`https://script.google.com/macros/s/AKfycbyFFyis70PPgV1kvsuN8A9h0ZuJMLZdEocM23hm2bua_1pXWnUVQF2ejLbVHGE46eqaOA/exec?mode=productionInfo&jobNo=${msg}`)
 
-        fetch(`https://script.google.com/macros/s/AKfycbyFFyis70PPgV1kvsuN8A9h0ZuJMLZdEocM23hm2bua_1pXWnUVQF2ejLbVHGE46eqaOA/exec?mode=productionInfo&jobNo=${jobNo}`)
-          .then(res => res.json())
-          .then(data => {
-            document.getElementById("jobCode").value = data.jobCode || "";
-            document.getElementById("jobName").value = data.jobName || "";
-            document.getElementById("staffName").value = data.staffName || "";
-            document.getElementById("startTime").value = data.startTime || "";
 
-            mode = data.staffName ? "finish" : "start";
-            document.getElementById("actionBtn").innerText = mode === "start" ? "🚀 เริ่มผลิต" : "📤 บันทึกข้อมูล";
-          });
-      } else {
-        document.getElementById("staffName").value = msg;
-        if (!document.getElementById("startTime").value) {
-          document.getElementById("startTime").value = new Date().toISOString();
-        }
-      }
-    },
-    error => {
-      console.warn("❌ Scan error:", error);
-      alert("⚠️ ไม่สามารถเปิดกล้องได้ กรุณาเปิดผ่าน Chrome และอนุญาตการเข้าถึงกล้องใน Settings");
+              .then(res => res.json())
+              .then(data => {
+                document.getElementById("jobCode").value = data.jobCode || "";
+                document.getElementById("jobName").value = data.jobName || "";
+                document.getElementById("staffName").value = data.staffName || "";
+                document.getElementById("startTime").value = data.startTime || "";
+
+                mode = data.staffName ? "finish" : "start";
+                document.getElementById("actionBtn").innerText = mode === "start" ? "🚀 เริ่มผลิต" : "📤 บันทึกข้อมูล";
+              });
+          } else {
+            document.getElementById("staffName").value = msg;
+            if (!document.getElementById("startTime").value) {
+              document.getElementById("startTime").value = new Date().toISOString();
+            }
+          }
+        });
     }
-  );
-}
-
-
 
     function submitProduction() {
       const payload = {
@@ -97,25 +80,6 @@
       .then(res => res.text())
       .then(msg => alert(msg));
     }
-
-    // ✅ แจ้งเตือนผู้ใช้ iOS ที่ไม่ได้เปิดผ่าน Safari
-    if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-      const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-      if (!isSafari) {
-        alert("⚠️ กรุณาเปิดหน้านี้ผ่าน Safari โดยตรง เพื่อให้สามารถใช้กล้องได้");
-      }
-    }
-Html5Qrcode.getCameras().then(devices => {
-  if (devices && devices.length) {
-    alert("✅ พบกล้อง " + devices.length + " ตัวบนอุปกรณ์นี้");
-  } else {
-    alert("❌ ไม่พบกล้องบนอุปกรณ์นี้");
-  }
-}).catch(err => {
-  console.error("❌ ไม่สามารถเข้าถึงกล้อง:", err);
-  alert("⚠️ ไม่สามารถเปิดกล้องได้ กรุณาอนุญาตการเข้าถึงกล้อง หรือเปิดผ่าน Chrome");
-});
-    
   </script>
 </body>
 </html>
