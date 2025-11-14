@@ -101,6 +101,17 @@
         alert("⚠️ กรุณาเปิดหน้านี้ผ่าน Safari โดยตรง เพื่อให้สามารถใช้กล้องได้");
       }
     }
+Html5Qrcode.getCameras().then(devices => {
+  if (devices && devices.length) {
+    alert("✅ พบกล้อง " + devices.length + " ตัวบนอุปกรณ์นี้");
+  } else {
+    alert("❌ ไม่พบกล้องบนอุปกรณ์นี้");
+  }
+}).catch(err => {
+  console.error("❌ ไม่สามารถเข้าถึงกล้อง:", err);
+  alert("⚠️ ไม่สามารถเปิดกล้องได้ กรุณาอนุญาตการเข้าถึงกล้อง หรือเปิดผ่าน Chrome");
+});
+    
   </script>
 </body>
 </html>
