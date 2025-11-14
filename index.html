@@ -36,41 +36,35 @@
     let mode = "start";
 
     function scanQR(type) {
+  document.getElementById("reader").innerHTML = "";
+  const scanner = new Html5Qrcode("reader");
+  scanner.start(
+    { facingMode: "environment" },
+    { fps: 10, qrbox: 250 },
+    msg => {
+      scanner.stop();
       document.getElementById("reader").innerHTML = "";
-      const scanner = new Html5Qrcode("reader");
-      scanner.start(
-        { facingMode: "environment" }, 
-        { fps: 10, qrbox: 250 },
-        msg => {
-          scanner.stop();
-          document.getElementById("reader").innerHTML = "";
 
-          if (type === "job") {
-            const jobNo = msg.split("||")[0]; // เลขจ๊อบ
-            document.getElementById("jobNo").value = jobNo;
-           fetch(`https://script.google.com/macros/s/AKfycbwFuqq3r7KO7VYMUc5Vpw-JxFoVIEmlxW74xnwgEiDfG7Z37Ub33nyVFReppsFB_duAEQ/exec?mode=productionInfo&jobNo=${jobNo}`)
-              .then(res => res.json())
-              .then(data => {
-                document.getElementById("jobCode").value = data.jobCode || "";
-                document.getElementById("jobName").value = data.jobName || "";
-                document.getElementById("staffName").value = data.staffName || "";
-                document.getElementById("startTime").value = data.startTime || "";
+      if (type === "job") {
+        const jobNo = msg.split("||")[0];
+        document.getElementById("jobNo").value = jobNo;
 
-                mode = data.staffName ? "finish" : "start";
-                document.getElementById("actionBtn").innerText = mode === "start" ? "🚀 เริ่มผลิต" : "📤 บันทึกข้อมูล";
-                // ✅ ปิดปุ่มสแกนชื่อพนักงาน ถ้ามีข้อมูลอยู่แล้ว
-                const scanStaffBtn = document.querySelector("button[onclick=\"scanQR('staff')\"]");
-                if (data.staffName) {
-                  scanStaffBtn.disabled = true;
-                  scanStaffBtn.style.opacity = 0.5;
-                  scanStaffBtn.innerText = "✅ มีชื่อพนักงานแล้ว";
-                } else {
-                  scanStaffBtn.disabled = false;
-                  scanStaffBtn.style.opacity = 1;
-                  scanStaffBtn.innerText = "👷 สแกนชื่อพนักงาน";
-        }
-              });
-          // ✅ ดึงรายการกระบวนการผลิตจากคอลัมน์ L
+        // ✅ เคลียร์ข้อมูลพนักงานและเวลา
+        document.getElementById("staffName").value = "";
+        document.getElementById("startTime").value = "";
+        document.getElementById("scanStaffBtn").disabled = false;
+        document.getElementById("scanStaffBtn").style.opacity = 1;
+        document.getElementById("scanStaffBtn").innerText = "👷 สแกนชื่อพนักงาน";
+
+        // ✅ ดึงข้อมูลจ๊อบทั่วไป
+        fetch(`https://script.google.com/macros/s/AKfycbwFuqq3r7KO7VYMUc5Vpw-JxFoVIEmlxW74xnwgEiDfG7Z37Ub33nyVFReppsFB_duAEQ/exec?mode=productionInfo&jobNo=${jobNo}`)
+          .then(res => res.json())
+          .then(data => {
+            document.getElementById("jobCode").value = data.jobCode || "";
+            document.getElementById("jobName").value = data.jobName || "";
+          });
+
+        // ✅ ดึงรายการกระบวนการผลิต
         fetch(`https://script.google.com/macros/s/AKfycbwFuqq3r7KO7VYMUc5Vpw-JxFoVIEmlxW74xnwgEiDfG7Z37Ub33nyVFReppsFB_duAEQ/exec?mode=processList&jobNo=${jobNo}`)
           .then(res => res.json())
           .then(data => {
@@ -82,9 +76,37 @@
               opt.textContent = p;
               select.appendChild(opt);
             });
-          });
 
-      } else if (type === "staff") {
+            // ✅ เพิ่ม onchange เพื่อโหลดข้อมูลพนักงานตามขั้นตอน
+            select.onchange = () => {
+              const selectedProcess = select.value;
+              if (!selectedProcess) return;
+
+              fetch(`https://script.google.com/macros/s/AKfycbwFuqq3r7KO7VYMUc5Vpw-JxFoVIEmlxW74xnwgEiDfG7Z37Ub33nyVFReppsFB_duAEQ/exec?mode=productionInfo&jobNo=${jobNo}&process=${encodeURIComponent(selectedProcess)}`)
+                .then(res => res.json())
+                .then(data => {
+                  document.getElementById("staffName").value = data.staffName || "";
+                  document.getElementById("startTime").value = data.startTime || "";
+
+                  mode = data.staffName ? "finish" : "start";
+                  document.getElementById("actionBtn").innerText = mode === "start" ? "🚀 เริ่มผลิต" : "📤 บันทึกข้อมูล";
+
+                  const scanStaffBtn = document.getElementById("scanStaffBtn");
+                  if (data.staffName) {
+                    scanStaffBtn.disabled = true;
+                    scanStaffBtn.style.opacity = 0.5;
+                    scanStaffBtn.innerText = "✅ มีชื่อพนักงานแล้ว";
+                  } else {
+                    scanStaffBtn.disabled = false;
+                    scanStaffBtn.style.opacity = 1;
+                    scanStaffBtn.innerText = "👷 สแกนชื่อพนักงาน";
+                  }
+                });
+            };
+          });
+      }
+
+      else if (type === "staff") {
         document.getElementById("staffName").value = msg;
         if (!document.getElementById("startTime").value) {
           document.getElementById("startTime").value = new Date().toISOString();
@@ -93,6 +115,7 @@
     }
   );
 }
+
     function submitProduction() {
   const selectedProcess = document.getElementById("processSelect").value;
   if (!selectedProcess) {
