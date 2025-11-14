@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>รายงานการผลิต</title>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <style>
+    body { font-family: sans-serif; padding: 10px; max-width: 400px; margin: auto; }
+    input, button { margin: 5px 0; padding: 8px; width: 100%; font-size: 16px; }
+    #reader { width: 100%; margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <h2>ระบบรายงานการผลิต</h2>
+
+  <button onclick="scanQR('job')">📦 สแกนเลขที่จ๊อบ</button>
+  <input id="jobNo" placeholder="เลขที่จ๊อบ" readonly>
+  <input id="jobCode" placeholder="รหัสงาน" readonly>
+  <input id="jobName" placeholder="ชื่องาน" readonly>
+  <input id="staffName" placeholder="ชื่อพนักงาน" readonly>
+  <input id="startTime" placeholder="เวลาเริ่มผลิต" readonly>
+  <input id="endTime" placeholder="เวลาที่ผลิตแล้วเสร็จ">
+  <input id="quantity" placeholder="จำนวนที่ผลิตได้จริง">
+
+  <button onclick="scanQR('staff')">👷 สแกนชื่อพนักงาน</button>
+  <button id="actionBtn" onclick="submitProduction()">🚀 เริ่มผลิต</button>
+
+  <div id="reader"></div>
+
+  <script>
+    let mode = "start";
+
+    function scanQR(type) {
+      document.getElementById("reader").innerHTML = "";
+      const scanner = new Html5Qrcode("reader");
+      scanner.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 },
+        msg => {
+          scanner.stop();
+          document.getElementById("reader").innerHTML = "";
+
+          if (type === "job") {
+            document.getElementById("jobNo").value = msg;
+           fetch(`https://script.google.com/macros/s/AKfycbyFFyis70PPgV1kvsuN8A9h0ZuJMLZdEocM23hm2bua_1pXWnUVQF2ejLbVHGE46eqaOA/exec?mode=productionInfo&jobNo=${msg}`)
+              .then(res => res.json())
+              .then(data => {
+                document.getElementById("jobCode").value = data.jobCode || "";
+                document.getElementById("jobName").value = data.jobName || "";
+                document.getElementById("staffName").value = data.staffName || "";
+                document.getElementById("startTime").value = data.startTime || "";
+
+                mode = data.staffName ? "finish" : "start";
+                document.getElementById("actionBtn").innerText = mode === "start" ? "🚀 เริ่มผลิต" : "📤 บันทึกข้อมูล";
+              });
+          } else {
+            document.getElementById("staffName").value = msg;
+            if (!document.getElementById("startTime").value) {
+              document.getElementById("startTime").value = new Date().toISOString();
+            }
+          }
+        });
+    }
+
+    function submitProduction() {
+      const payload = {
+        mode: "production",
+        jobNo: document.getElementById("jobNo").value,
+        staffName: document.getElementById("staffName").value,
+        startTime: document.getElementById("startTime").value,
+        endTime: document.getElementById("endTime").value,
+        quantity: document.getElementById("quantity").value
+      };
+
+      fetch("https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams(payload)
+      })
+      .then(res => res.text())
+      .then(msg => alert(msg));
+    }
+  </script>
+</body>
+</html>
