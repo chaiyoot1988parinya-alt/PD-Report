@@ -53,6 +53,17 @@
 
                 mode = data.staffName ? "finish" : "start";
                 document.getElementById("actionBtn").innerText = mode === "start" ? "🚀 เริ่มผลิต" : "📤 บันทึกข้อมูล";
+                // ✅ ปิดปุ่มสแกนชื่อพนักงาน ถ้ามีข้อมูลอยู่แล้ว
+                const scanStaffBtn = document.querySelector("button[onclick=\"scanQR('staff')\"]");
+                if (data.staffName) {
+                  scanStaffBtn.disabled = true;
+                  scanStaffBtn.style.opacity = 0.5;
+                  scanStaffBtn.innerText = "✅ มีชื่อพนักงานแล้ว";
+                } else {
+                  scanStaffBtn.disabled = false;
+                  scanStaffBtn.style.opacity = 1;
+                  scanStaffBtn.innerText = "👷 สแกนชื่อพนักงาน";
+        }
               });
           } else {
             document.getElementById("staffName").value = msg;
@@ -61,7 +72,7 @@
             }
           }
         });
-    }
+      }
 
     function submitProduction() {
       const payload = {
