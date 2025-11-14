@@ -39,19 +39,19 @@
           document.getElementById("reader").innerHTML = "";
 
           if (type === "job") {
-            document.getElementById("jobNo").value = msg;
-           fetch(`https://script.google.com/macros/s/AKfycbyFFyis70PPgV1kvsuN8A9h0ZuJMLZdEocM23hm2bua_1pXWnUVQF2ejLbVHGE46eqaOA/exec?mode=productionInfo&jobNo=${msg}`)
+            const jobNo = msg.split("||")[0]; // ✅ ดึงเฉพาะเลขที่จ๊อบ
+  document.getElementById("jobNo").value = jobNo;
 
+  fetch(`https://script.google.com/macros/s/AKfycbyFFyis70PPgV1kvsuN8A9h0ZuJMLZdEocM23hm2bua_1pXWnUVQF2ejLbVHGE46eqaOA/exec?mode=productionInfo&jobNo=${jobNo}`)
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("jobCode").value = data.jobCode || "";
+      document.getElementById("jobName").value = data.jobName || "";
+      document.getElementById("staffName").value = data.staffName || "";
+      document.getElementById("startTime").value = data.startTime || "";
 
-              .then(res => res.json())
-              .then(data => {
-                document.getElementById("jobCode").value = data.jobCode || "";
-                document.getElementById("jobName").value = data.jobName || "";
-                document.getElementById("staffName").value = data.staffName || "";
-                document.getElementById("startTime").value = data.startTime || "";
-
-                mode = data.staffName ? "finish" : "start";
-                document.getElementById("actionBtn").innerText = mode === "start" ? "🚀 เริ่มผลิต" : "📤 บันทึกข้อมูล";
+      mode = data.staffName ? "finish" : "start";
+      document.getElementById("actionBtn").innerText = mode === "start" ? "🚀 เริ่มผลิต" : "📤 บันทึกข้อมูล";
               });
           } else {
             document.getElementById("staffName").value = msg;
