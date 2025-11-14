@@ -48,7 +48,7 @@
           if (type === "job") {
             const jobNo = msg.split("||")[0]; // เลขจ๊อบ
             document.getElementById("jobNo").value = jobNo;
-           fetch(`https://script.google.com/macros/s/AKfycbyFFyis70PPgV1kvsuN8A9h0ZuJMLZdEocM23hm2bua_1pXWnUVQF2ejLbVHGE46eqaOA/exec?mode=productionInfo&jobNo=${jobNo}`)
+           fetch(`https://script.google.com/macros/s/AKfycbwFuqq3r7KO7VYMUc5Vpw-JxFoVIEmlxW74xnwgEiDfG7Z37Ub33nyVFReppsFB_duAEQ/exec?mode=productionInfo&jobNo=${jobNo}`)
               .then(res => res.json())
               .then(data => {
                 document.getElementById("jobCode").value = data.jobCode || "";
@@ -71,7 +71,7 @@
         }
               });
           // ✅ ดึงรายการกระบวนการผลิตจากคอลัมน์ L
-        fetch(`https://script.google.com/macros/s/AKfycbxc_RreieS72bfiNHzGMocBRNHUjv34OjTu9mE_QFUhCShB5j9V_fts_n_KY9HHv5yAjA/exec?mode=processList&jobNo=${jobNo}`)
+        fetch(`https://script.google.com/macros/s/AKfycbwFuqq3r7KO7VYMUc5Vpw-JxFoVIEmlxW74xnwgEiDfG7Z37Ub33nyVFReppsFB_duAEQ/exec?mode=processList&jobNo=${jobNo}`)
           .then(res => res.json())
           .then(data => {
             const select = document.getElementById("processSelect");
@@ -104,7 +104,7 @@
         process: document.getElementById("processSelect").value
       };
 
-      fetch("https://script.google.com/macros/s/AKfycbxc_RreieS72bfiNHzGMocBRNHUjv34OjTu9mE_QFUhCShB5j9V_fts_n_KY9HHv5yAjA/exec", {
+      fetch("https://script.google.com/macros/s/AKfycbwFuqq3r7KO7VYMUc5Vpw-JxFoVIEmlxW74xnwgEiDfG7Z37Ub33nyVFReppsFB_duAEQ/exec", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams(payload)
