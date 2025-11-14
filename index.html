@@ -57,7 +57,7 @@
         document.getElementById("scanStaffBtn").innerText = "👷 สแกนชื่อพนักงาน";
 
         // ✅ ดึงข้อมูลจ๊อบทั่วไป
-        fetch(`https://script.google.com/macros/s/AKfycbwG_XbuR6rOjWIROBcxnhQnHjhgkWY7aA7MmPWKo_s_5F8zL-Ja72Qfq-H5G4TskEkXJw/exec?mode=productionInfo&jobNo=${jobNo}`)
+        fetch(`https://script.google.com/macros/s/AKfycbztWoHhN1X32TF5ql3xvYH38BTWgKTExES_qTZhA_j1FRi08ipYCaehfS0hyHwpCysRfw/exec?mode=productionInfo&jobNo=${jobNo}`)
 
           .then(res => res.json())
           .then(data => {
@@ -66,7 +66,7 @@
           });
 
         // ✅ ดึงรายการกระบวนการผลิต
-        fetch(`https://script.google.com/macros/s/AKfycbwG_XbuR6rOjWIROBcxnhQnHjhgkWY7aA7MmPWKo_s_5F8zL-Ja72Qfq-H5G4TskEkXJw/exec?mode=processList&jobNo=${jobNo}`)
+        fetch(`https://script.google.com/macros/s/AAKfycbztWoHhN1X32TF5ql3xvYH38BTWgKTExES_qTZhA_j1FRi08ipYCaehfS0hyHwpCysRfw/exec?mode=processList&jobNo=${jobNo}`)
           .then(res => res.json())
           .then(data => {
             const select = document.getElementById("processSelect");
@@ -88,7 +88,7 @@
                 document.getElementById("endTime").value = "";
                 document.getElementById("quantity").value = "";
 
-              fetch(`https://script.google.com/macros/s/AKfycbwG_XbuR6rOjWIROBcxnhQnHjhgkWY7aA7MmPWKo_s_5F8zL-Ja72Qfq-H5G4TskEkXJw/exec?mode=productionInfo&jobNo=${jobNo}&process=${encodeURIComponent(selectedProcess)}`)
+              fetch(`https://script.google.com/macros/s/AKfycbztWoHhN1X32TF5ql3xvYH38BTWgKTExES_qTZhA_j1FRi08ipYCaehfS0hyHwpCysRfw/exec?mode=productionInfo&jobNo=${jobNo}&process=${encodeURIComponent(selectedProcess)}`)
                 .then(res => res.json())
                 .then(data => {
                   document.getElementById("staffName").value = data.staffName || "";
@@ -144,7 +144,7 @@
     process: selectedProcess
   };
 
-  fetch("https://script.google.com/macros/s/AKfycbwG_XbuR6rOjWIROBcxnhQnHjhgkWY7aA7MmPWKo_s_5F8zL-Ja72Qfq-H5G4TskEkXJw/exec", {
+  fetch("https://script.google.com/macros/s/AKfycbztWoHhN1X32TF5ql3xvYH38BTWgKTExES_qTZhA_j1FRi08ipYCaehfS0hyHwpCysRfw/exec", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams(payload)
