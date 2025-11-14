@@ -123,6 +123,11 @@
     return;
   }
 
+  // ✅ ใส่ timestamp ตอนจบการผลิต
+  if (mode === "finish" && !document.getElementById("endTime").value) {
+    document.getElementById("endTime").value = new Date().toISOString();
+  }
+
   const payload = {
     mode: "production",
     jobNo: document.getElementById("jobNo").value,
