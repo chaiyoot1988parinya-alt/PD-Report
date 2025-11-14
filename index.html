@@ -17,6 +17,9 @@
   <input id="jobNo" placeholder="เลขที่จ๊อบ" readonly>
   <input id="jobCode" placeholder="รหัสงาน" readonly>
   <input id="jobName" placeholder="ชื่องาน" readonly>
+  <select id="processSelect">
+  <option value="">เลือกกระบวนการผลิต</option>
+</select>
   <input id="staffName" placeholder="ชื่อพนักงาน" readonly>
   <input id="startTime" placeholder="เวลาเริ่มผลิต" readonly>
   <input id="endTime" placeholder="เวลาที่ผลิตแล้วเสร็จ">
@@ -67,14 +70,29 @@
                   scanStaffBtn.innerText = "👷 สแกนชื่อพนักงาน";
         }
               });
-          } else {
-            document.getElementById("staffName").value = msg;
-            if (!document.getElementById("startTime").value) {
-              document.getElementById("startTime").value = new Date().toISOString();
-            }
-          }
-        });
+          // ✅ ดึงรายการกระบวนการผลิตจากคอลัมน์ L
+        fetch(`https://script.google.com/macros/s/AKfycbyFFyis70PPgV1kvsuN8A9h0ZuJMLZdEocM23hm2bua_1pXWnUVQF2ejLbVHGE46eqaOA/exec?mode=processList&jobNo=${jobNo}`)
+          .then(res => res.json())
+          .then(data => {
+            const select = document.getElementById("processSelect");
+            select.innerHTML = '<option value="">เลือกกระบวนการผลิต</option>';
+            data.processList.forEach(p => {
+              const opt = document.createElement("option");
+              opt.value = p;
+              opt.textContent = p;
+              select.appendChild(opt);
+            });
+          });
+
+      } else if (type === "staff") {
+        document.getElementById("staffName").value = msg;
+        if (!document.getElementById("startTime").value) {
+          document.getElementById("startTime").value = new Date().toISOString();
+        }
       }
+    }
+  );
+}
 
     function submitProduction() {
       const payload = {
@@ -83,7 +101,8 @@
         staffName: document.getElementById("staffName").value,
         startTime: document.getElementById("startTime").value,
         endTime: document.getElementById("endTime").value,
-        quantity: document.getElementById("quantity").value
+        quantity: document.getElementById("quantity").value,
+        process: document.getElementById("processSelect").value
       };
 
       fetch("https://script.google.com/macros/s/AKfycbyFFyis70PPgV1kvsuN8A9h0ZuJMLZdEocM23hm2bua_1pXWnUVQF2ejLbVHGE46eqaOA/exec", {
