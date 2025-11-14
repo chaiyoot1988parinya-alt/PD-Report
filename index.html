@@ -57,7 +57,8 @@
         document.getElementById("scanStaffBtn").innerText = "👷 สแกนชื่อพนักงาน";
 
         // ✅ ดึงข้อมูลจ๊อบทั่วไป
-        fetch(`https://script.google.com/macros/s/AKfycbwFuqq3r7KO7VYMUc5Vpw-JxFoVIEmlxW74xnwgEiDfG7Z37Ub33nyVFReppsFB_duAEQ/exec?mode=productionInfo&jobNo=${jobNo}`)
+        fetch(`https://script.google.com/macros/s/AKfycbx_b0h9vpPJTRkGn7qLO-5yX5rykabHkvnUC8M1HK8MT4tEjRvigRq3TrUt4EwtrQNwxA/exec?mode=productionInfo&jobNo=${jobNo}`)
+   
           .then(res => res.json())
           .then(data => {
             document.getElementById("jobCode").value = data.jobCode || "";
@@ -65,7 +66,7 @@
           });
 
         // ✅ ดึงรายการกระบวนการผลิต
-        fetch(`https://script.google.com/macros/s/AKfycbwFuqq3r7KO7VYMUc5Vpw-JxFoVIEmlxW74xnwgEiDfG7Z37Ub33nyVFReppsFB_duAEQ/exec?mode=processList&jobNo=${jobNo}`)
+        fetch(`https://script.google.com/macros/s/AKfycbx_b0h9vpPJTRkGn7qLO-5yX5rykabHkvnUC8M1HK8MT4tEjRvigRq3TrUt4EwtrQNwxA/exec?mode=processList&jobNo=${jobNo}`)
           .then(res => res.json())
           .then(data => {
             const select = document.getElementById("processSelect");
@@ -82,7 +83,7 @@
               const selectedProcess = select.value;
               if (!selectedProcess) return;
 
-              fetch(`https://script.google.com/macros/s/AKfycbwFuqq3r7KO7VYMUc5Vpw-JxFoVIEmlxW74xnwgEiDfG7Z37Ub33nyVFReppsFB_duAEQ/exec?mode=productionInfo&jobNo=${jobNo}&process=${encodeURIComponent(selectedProcess)}`)
+              fetch(`https://script.google.com/macros/s/AKfycbx_b0h9vpPJTRkGn7qLO-5yX5rykabHkvnUC8M1HK8MT4tEjRvigRq3TrUt4EwtrQNwxA/exec?mode=productionInfo&jobNo=${jobNo}&process=${encodeURIComponent(selectedProcess)}`)
                 .then(res => res.json())
                 .then(data => {
                   document.getElementById("staffName").value = data.staffName || "";
@@ -138,7 +139,7 @@
     process: selectedProcess
   };
 
-  fetch("https://script.google.com/macros/s/AKfycbwFuqq3r7KO7VYMUc5Vpw-JxFoVIEmlxW74xnwgEiDfG7Z37Ub33nyVFReppsFB_duAEQ/exec", {
+  fetch("https://script.google.com/macros/s/AKfycbx_b0h9vpPJTRkGn7qLO-5yX5rykabHkvnUC8M1HK8MT4tEjRvigRq3TrUt4EwtrQNwxA/exec", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams(payload)
