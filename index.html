@@ -22,7 +22,9 @@
   <input id="endTime" placeholder="เวลาที่ผลิตแล้วเสร็จ">
   <input id="quantity" placeholder="จำนวนที่ผลิตได้จริง">
 
-  <button onclick="scanQR('staff')">👷 สแกนชื่อพนักงาน</button>
+ // <button onclick="scanQR('staff')">👷 สแกนชื่อพนักงาน</button>
+  <button id="scanStaffBtn" onclick="scanQR('staff')">👷 สแกนชื่อพนักงาน</button>
+
   <button id="actionBtn" onclick="submitProduction()">🚀 เริ่มผลิต</button>
 
   <div id="reader"></div>
