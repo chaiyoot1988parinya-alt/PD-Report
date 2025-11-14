@@ -82,6 +82,11 @@
             select.onchange = () => {
               const selectedProcess = select.value;
               if (!selectedProcess) return;
+              // ✅ เคลียร์ค่าก่อนโหลดข้อมูลใหม่
+                document.getElementById("staffName").value = "";
+                document.getElementById("startTime").value = "";
+                document.getElementById("endTime").value = "";
+                document.getElementById("quantity").value = "";
 
               fetch(`https://script.google.com/macros/s/AKfycbwG_XbuR6rOjWIROBcxnhQnHjhgkWY7aA7MmPWKo_s_5F8zL-Ja72Qfq-H5G4TskEkXJw/exec?mode=productionInfo&jobNo=${jobNo}&process=${encodeURIComponent(selectedProcess)}`)
                 .then(res => res.json())
