@@ -38,42 +38,55 @@
     let mode = "start";
 
     function scanQR(type) {
-      document.getElementById("reader").innerHTML = "";
-      const scanner = new Html5Qrcode("reader");
+  document.getElementById("reader").innerHTML = "";
 
-      scanner.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 },
-        msg => {
-          scanner.stop();
-          document.getElementById("reader").innerHTML = "";
-
-          if (type === "job") {
-            const jobNo = msg.split("||")[0];
-            document.getElementById("jobNo").value = jobNo;
-
-            fetch(`https://script.google.com/macros/s/AKfycbyFFyis70PPgV1kvsuN8A9h0ZuJMLZdEocM23hm2bua_1pXWnUVQF2ejLbVHGE46eqaOA/exec?mode=productionInfo&jobNo=${jobNo}`)
-              .then(res => res.json())
-              .then(data => {
-                document.getElementById("jobCode").value = data.jobCode || "";
-                document.getElementById("jobName").value = data.jobName || "";
-                document.getElementById("staffName").value = data.staffName || "";
-                document.getElementById("startTime").value = data.startTime || "";
-
-                mode = data.staffName ? "finish" : "start";
-                document.getElementById("actionBtn").innerText = mode === "start" ? "🚀 เริ่มผลิต" : "📤 บันทึกข้อมูล";
-              });
-          } else {
-            document.getElementById("staffName").value = msg;
-            if (!document.getElementById("startTime").value) {
-              document.getElementById("startTime").value = new Date().toISOString();
-            }
-          }
-        },
-        error => {
-          console.warn("❌ Scan error:", error);
-          alert("⚠️ ไม่สามารถเปิดกล้องได้ กรุณาเปิดผ่าน Safari หรือ Chrome และอนุญาตการเข้าถึงกล้องใน Settings");
-        }
-      );
+  Html5Qrcode.getCameras().then(devices => {
+    if (!devices || devices.length === 0) {
+      alert("❌ ไม่พบกล้องบนอุปกรณ์นี้ กรุณาเปิดผ่าน Chrome หรือ Safari และตรวจสอบสิทธิ์กล้องใน Settings");
+      return;
     }
+
+    const scanner = new Html5Qrcode("reader");
+    scanner.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: 250 },
+      msg => {
+        scanner.stop();
+        document.getElementById("reader").innerHTML = "";
+
+        if (type === "job") {
+          const jobNo = msg.split("||")[0];
+          document.getElementById("jobNo").value = jobNo;
+
+          fetch(`https://script.google.com/macros/s/AKfycbyFFyis70PPgV1kvsuN8A9h0ZuJMLZdEocM23hm2bua_1pXWnUVQF2ejLbVHGE46eqaOA/exec?mode=productionInfo&jobNo=${jobNo}`)
+            .then(res => res.json())
+            .then(data => {
+              document.getElementById("jobCode").value = data.jobCode || "";
+              document.getElementById("jobName").value = data.jobName || "";
+              document.getElementById("staffName").value = data.staffName || "";
+              document.getElementById("startTime").value = data.startTime || "";
+
+              mode = data.staffName ? "finish" : "start";
+              document.getElementById("actionBtn").innerText = mode === "start" ? "🚀 เริ่มผลิต" : "📤 บันทึกข้อมูล";
+            });
+        } else {
+          document.getElementById("staffName").value = msg;
+          if (!document.getElementById("startTime").value) {
+            document.getElementById("startTime").value = new Date().toISOString();
+          }
+        }
+      },
+      error => {
+        console.warn("❌ Scan error:", error);
+        alert("⚠️ ไม่สามารถเปิดกล้องได้ กรุณาเปิดผ่าน Safari หรือ Chrome และอนุญาตการเข้าถึงกล้องใน Settings");
+      }
+    );
+  }).catch(err => {
+    console.error("❌ ไม่สามารถเข้าถึงกล้อง:", err);
+    alert("⚠️ ไม่สามารถเปิดกล้องได้ กรุณาเปิดผ่านเบราว์เซอร์หลัก และตรวจสอบสิทธิ์กล้องใน Settings");
+  });
+}
+
 
     function submitProduction() {
       const payload = {
