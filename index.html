@@ -94,24 +94,31 @@
   );
 }
     function submitProduction() {
-      const payload = {
-        mode: "production",
-        jobNo: document.getElementById("jobNo").value,
-        staffName: document.getElementById("staffName").value,
-        startTime: document.getElementById("startTime").value,
-        endTime: document.getElementById("endTime").value,
-        quantity: document.getElementById("quantity").value,
-        process: document.getElementById("processSelect").value
-      };
+  const selectedProcess = document.getElementById("processSelect").value;
+  if (!selectedProcess) {
+    alert("กรุณาเลือกกระบวนการผลิตก่อนบันทึก");
+    return;
+  }
 
-      fetch("https://script.google.com/macros/s/AKfycbwFuqq3r7KO7VYMUc5Vpw-JxFoVIEmlxW74xnwgEiDfG7Z37Ub33nyVFReppsFB_duAEQ/exec", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams(payload)
-      })
-      .then(res => res.text())
-      .then(msg => alert(msg));
-    }
+  const payload = {
+    mode: "production",
+    jobNo: document.getElementById("jobNo").value,
+    staffName: document.getElementById("staffName").value,
+    startTime: document.getElementById("startTime").value,
+    endTime: document.getElementById("endTime").value,
+    quantity: document.getElementById("quantity").value,
+    process: selectedProcess
+  };
+
+  fetch("https://script.google.com/macros/s/AKfycbwFuqq3r7KO7VYMUc5Vpw-JxFoVIEmlxW74xnwgEiDfG7Z37Ub33nyVFReppsFB_duAEQ/exec", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams(payload)
+  })
+  .then(res => res.text())
+  .then(msg => alert(msg));
+}
+
   </script>
 </body>
 </html>
